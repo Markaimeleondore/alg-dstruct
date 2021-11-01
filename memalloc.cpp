@@ -27,7 +27,6 @@ typedef struct mem_block
     struct mem_block *prev;
 } mb;
 
-    
 static int mem_allowed = 0; //Memory required size
        int init_checker = 0;
 
@@ -38,17 +37,14 @@ int memgetblocksize()
 {
     return structsize;
 }
-
     
 int memgetminimumsize()
 {
     return structsize;
 }
 
-
 int current_free_memory()
 {
-
     if(mem_beginning == NULL)
         return -1;
 
@@ -75,7 +71,6 @@ int meminit(void *pMemory, int size)
     if(init_checker)
         return -1;
 
-
     mem_beginning = (mb*)pMemory;
 
     mem_beginning->size = size - structsize ;
@@ -89,7 +84,6 @@ int meminit(void *pMemory, int size)
 
     return size;
 }
-
 
 // You can implement memory leak checks here
 void memdone()
@@ -109,7 +103,6 @@ void memdone()
     init_checker = 0;
     mem_allowed = 0;
     mem_beginning = NULL;
-    
 }
 
     
@@ -176,8 +169,7 @@ void *memalloc(int size)
     return best_fit_ptr == NULL ? 0 : best_fit_ptr;
 }
 
-
-
+    
 int does_point_to_the_block(void* p)
 {
     if(p == NULL)
@@ -206,12 +198,10 @@ int does_point_to_the_block(void* p)
 
             return 1;
         }
-
         cur = cur->next;
     }
     return 0;
 }
-
 
 // Free memory previously allocated by memalloc
 void memfree(void *p)
@@ -219,9 +209,9 @@ void memfree(void *p)
     mb* pointed_block = does_point_to_the_block(p) ? (mb*)p - 1 : NULL;
     if(!pointed_block)
         return;
-
+    
     //----------merging------------//
-
+    
     pointed_block->avail = 1;
     mb* new_free_block = pointed_block; //Block for extra memory and for probable merging
 
@@ -259,7 +249,6 @@ void memfree(void *p)
         new_free_block->size = new_block_size;
     }
 
-
     //lost parts grabbing
     void* edge_of_this_block_ptr = (void*)((char*)(new_free_block + 1) + new_free_block->size);
     void* edge_of_mem_ptr = (void*)((char*)mem_beginning + mem_allowed);
@@ -275,35 +264,6 @@ void memfree(void *p)
             new_free_block->size += ((char*)mem_beginning + mem_allowed - (char*)edge_of_this_block_ptr);
     }
 }
-
-
-// Return minimum size in bytes of the memory pool to allocate 0-bytes block
-// use case:
-// void *p   = 0;
-// void *ptr = malloc(memgetminimumsize() + 1);
-// meminit(ptr, memgetminimumsize() + 1)
-// p = memalloc(1); // Success!
-// memfree(p);
-// memdone();
-// free(ptr);
-
-
-
-
-// Returns size in bytes of additional information per allocation
-// use case:
-// void *p1 = 0, *p2 = 0;
-// int  memsize = memgetminimumsize() + memgetblocksize() + 2;
-// void *ptr = malloc(memsize);
-// meminit(ptr, memsize())
-// p1 = memalloc(1); // Success!
-// p2 = memalloc(1); // Success!
-// memfree(p2);
-// memfree(p1);
-// memdone();
-// free(ptr);
-
-
 
 #ifdef __cplusplus
 }
