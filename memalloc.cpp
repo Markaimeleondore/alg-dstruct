@@ -115,9 +115,10 @@ void memdone()
     {
         fprintf(stderr, "Oh no, where is my memory?! %d allowed, but only %d availiable now \n", mem_allowed, cur_mem_size);
     }
-
-
-    //printf("%d", start->next->prev->size);
+    init_checker = 0;
+    mem_allowed = 0;
+    mem_beginning = NULL;
+    
 }
 
 
@@ -152,29 +153,6 @@ mb* seekin_for_the_best_fittin(int size)
         //printf("Size %d", cur_best->size);
         return cur_best;
 }
-
-
-
-
-//void* correcting_pointer_for_memloc(void* p)
-//{
-//    mb* cur = mem_beginning;
-//    void* cur_ptr = NULL;
-//    while(cur)
-//    {
-//        cur_ptr = (void*)(cur + 1);
-//        if(cur_ptr == p)
-//        {
-//            return cur_ptr;
-//        }
-//        cur = cur->next;
-//    }
-//    return NULL;
-//}
-
-
-
-
 
 // Allocate memory block of size 'size'.
 // Returns pointer to memory block is success, 0 otherwise
