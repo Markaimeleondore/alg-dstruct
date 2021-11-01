@@ -19,8 +19,6 @@ extern "C" {
 Сравните производительность вашей системы с стандартным malloc/free
 */
 
-
-
 typedef struct mem_block
 {
     int avail;
@@ -29,12 +27,11 @@ typedef struct mem_block
     struct mem_block *prev;
 } mb;
 
-
+    
 static int mem_allowed = 0; //Memory required size
        int init_checker = 0;
 
 static mb* mem_beginning; //First block init
-
 
 
 int memgetblocksize()
@@ -42,12 +39,11 @@ int memgetblocksize()
     return structsize;
 }
 
+    
 int memgetminimumsize()
 {
     return structsize;
 }
-
-
 
 
 int current_free_memory()
@@ -67,13 +63,9 @@ int current_free_memory()
         cur = cur->next;
     }
     return cur_size;
-
 }
-
-
-
-
-
+    
+    
 // Init memory system with memory block pMemory.
 int meminit(void *pMemory, int size)
 {
@@ -99,7 +91,6 @@ int meminit(void *pMemory, int size)
 }
 
 
-
 // You can implement memory leak checks here
 void memdone()
 {
@@ -113,7 +104,7 @@ void memdone()
 
     if(cur_mem_size < mem_allowed)
     {
-        fprintf(stderr, "Oh no, where is my memory?! %d allowed, but only %d availiable now \n", mem_allowed, cur_mem_size);
+        fprintf(stderr, "Memory leak: %d allowed, but only %d availiable now \n", mem_allowed, cur_mem_size);
     }
     init_checker = 0;
     mem_allowed = 0;
@@ -121,18 +112,14 @@ void memdone()
     
 }
 
-
-
-
-
+    
 mb* seekin_for_the_best_fittin(int size)
 {
     if(mem_beginning == NULL)
     {
-        fprintf(stderr, "Fuck my life\n");
+        fprintf(stderr, "Init error");
         return NULL;
     }
-
 
     mb* cur = mem_beginning;
     mb* cur_best = NULL;
@@ -150,7 +137,6 @@ mb* seekin_for_the_best_fittin(int size)
         }
         cur = cur->next;
     }
-        //printf("Size %d", cur_best->size);
         return cur_best;
 }
 
@@ -160,16 +146,13 @@ void *memalloc(int size)
 {
     mb* best_fit = seekin_for_the_best_fittin(size);
 
-
     if(best_fit == NULL)
     {
-        fprintf(stderr, "NEM, honey\n");
+        fprintf(stderr, "Not enough memory\n");
         return 0;
     }
 
     void* best_fit_ptr = (void*)(best_fit + 1);
-
-   // printf("%d",best_fit->size);
 
     if(best_fit->size > structsize + size)
     {
@@ -187,7 +170,6 @@ void *memalloc(int size)
         best_fit->next = trash_block;
     }
 
-
     best_fit->size = size;
     best_fit->avail = 0;
 
@@ -200,14 +182,11 @@ int does_point_to_the_block(void* p)
 {
     if(p == NULL)
     {
-        fprintf(stderr,"Haha, nice try!\n");
+        fprintf(stderr,"Null pointer\n");
         return 0;
     }
-
-
-
+    
     mb* cur = mem_beginning;
-
     mb* pointed_block = (mb*)p - 1;
 
     while(cur)
@@ -216,12 +195,12 @@ int does_point_to_the_block(void* p)
         {
             if(pointed_block == NULL)
             {
-                fprintf(stderr,"Sir, U've missed with the pointer!\n");
+                fprintf(stderr,"Pointer don't point to the block\n");
                 return 0;
             }
             if(pointed_block->avail == 1)
             {
-                fprintf(stderr,"This block is already availiable!\n");
+                fprintf(stderr,"This block is already availiable\n");
                 return 0;
             }
 
@@ -234,13 +213,9 @@ int does_point_to_the_block(void* p)
 }
 
 
-
-
-
 // Free memory previously allocated by memalloc
 void memfree(void *p)
 {
-
     mb* pointed_block = does_point_to_the_block(p) ? (mb*)p - 1 : NULL;
     if(!pointed_block)
         return;
@@ -249,12 +224,9 @@ void memfree(void *p)
 
     pointed_block->avail = 1;
     mb* new_free_block = pointed_block; //Block for extra memory and for probable merging
-    //new_free_block->avail = 1;
-
 
     if(pointed_block->prev != NULL && pointed_block->prev->avail == 1)
     {
-
         int pointed_block_size;
         if(pointed_block->next)
             pointed_block_size = (char*)pointed_block->next - (char*)(pointed_block->prev + 1);
@@ -263,19 +235,12 @@ void memfree(void *p)
 
         pointed_block->prev->next = pointed_block->next;
 
-        if(pointed_block->next)
-        {
-        pointed_block->next->prev = pointed_block->prev;
-        }
-
-
+        if(pointed_block->next)    
+            pointed_block->next->prev = pointed_block->prev;
+     
         pointed_block->prev->size = pointed_block_size;
-
         new_free_block = pointed_block->prev;
-
     }
-
-
     if(new_free_block->next != NULL && new_free_block->next->avail == 1)
     {
         int new_block_size;
@@ -290,9 +255,7 @@ void memfree(void *p)
             new_free_block->next->next->prev =  new_free_block;
         }
 
-
         new_free_block->next =  new_free_block->next->next;
-
         new_free_block->size = new_block_size;
     }
 
