@@ -116,8 +116,9 @@ void memdone()
         fprintf(stderr, "Oh no, where is my memory?! %d allowed, but only %d availiable now \n", mem_allowed, cur_mem_size);
     }
 
-
-    //printf("%d", start->next->prev->size);
+    init_checker = 0;
+    mem_allowed = 0;
+    mem_beginning = NULL;
 }
 
 
