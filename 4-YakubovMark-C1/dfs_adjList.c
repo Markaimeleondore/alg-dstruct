@@ -105,6 +105,21 @@ void add_connection(graph* graph, int first_connected, int second_connected)
     graph->adjLists[second_connected] = newNode;
 }
 
+double stress_test__time(int number_of_verts)
+{
+    graph* new_graph = create_graph(number_of_verts);
+    for(int i = 0; i < number_of_verts; i++)
+    {
+        for(int j = 0; j < number_of_verts; j++)
+        {
+            add_connection(new_graph, i, j);
+        }
+    }
+    unsigned long time_start = clock();
+    dfs(new_graph, 0);
+    double total_time = (double)(clock() - time_start) / CLOCKS_PER_SEC;
+    printf("%f", total_time);
+}
 
 int main()
 {
@@ -124,6 +139,6 @@ int main()
     }
 
     dfs(new_graph, 0);
-
+//stress_test__time(2000); //72.700 seconds 
     return 0;
 }
