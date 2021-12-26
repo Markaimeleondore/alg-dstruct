@@ -17,23 +17,42 @@ double * solution_beginnings;
 double * solution_ends;
 
 
-node* addnode(node *tree, double beginning, double end)
+node *init(node *root, double beginning, double end)
 {
-  if (tree == NULL)
-    {
-    tree = malloc(sizeof(node));
-    if(!tree)
+    node * new_node = malloc(sizeof(node));
+    if(new_node == NULL)
         return NULL;
-    tree->beginning = beginning;
-    tree->end = end;
-    tree->left =  NULL;
-    tree->right = NULL;
+    new_node -> beginning = beginning;
+    new_node -> end = end;
+    new_node -> parent = NULL;
+    new_node -> left = new_node -> right = NULL;
+    root = new_node;
+    return root;
+}
+
+
+node *add(node *root, double beginning, double end)
+{
+    node *cur = root, *parent_keeper = NULL;
+    node *new_node = malloc(sizeof(node));
+    if(new_node == NULL)
+        return NULL;
+    new_node -> beginning = beginning;
+    new_node -> end = end;
+    while (cur != NULL)
+    {
+        parent_keeper = cur;
+        if (beginning < cur -> beginning)
+            cur = cur -> left;
+        else
+            cur = cur -> right;
     }
-  else  if (beginning < tree->beginning)
-    tree->left = addnode(tree->left, beginning, end);
-  else
-    tree->right = addnode(tree->right, beginning, end);
-  return(tree);
+    new_node -> parent = parent_keeper;
+    new_node -> left = NULL;
+    new_node -> right = NULL;
+    if (beginning < parent_keeper -> beginning) parent_keeper -> left = new_node;
+    else parent_keeper -> right = new_node;
+    return root;
 }
 
 
@@ -149,6 +168,18 @@ void intersections(node* start, double beginning, double end, double * beginning
 }
 
 
+void inorder(node *root)
+{
+    if (root == NULL)
+        return;
+
+    if (root -> beginning)
+        printf("%lf ", root -> beginning);
+    inorder(root -> left);
+    inorder(root -> right);
+}
+
+
 int main()
 {
     char file_name[] = "intersections.txt";
@@ -168,10 +199,13 @@ int main()
         double * ends = malloc(sizeof(double) * iterator);
         if(ends == NULL)
             return -1;
+        fscanf(data, "%lf %lf\n", &beginning, &end);
+        head = init(head, beginning, end);
+        iterator--;
         while(iterator--)
         {
             fscanf(data, "%lf %lf\n", &beginning, &end);
-            head = addnode(head, beginning, end);
+            head = add(head, beginning, end);
         }
         fscanf(data, "%d\n", &quantity_of_requests);
         int * passed_or_not = malloc(sizeof(int)*quantity_of_requests);
