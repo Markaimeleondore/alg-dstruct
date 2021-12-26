@@ -64,21 +64,6 @@ node* get_min(node * start)
 }
 
 
-node* get_next_after_deleted(node* start)
-{
-    node* left_buffer = NULL, *parent_buffer = start;
-    if(parent_buffer->right)
-        return get_min(parent_buffer->right);
-    left_buffer = parent_buffer->parent;
-    while(left_buffer && (parent_buffer == left_buffer->right))
-    {
-        parent_buffer = left_buffer;
-        left_buffer = left_buffer->parent;
-    }
-    return left_buffer;
-}
-
-
 int delete_by_border(node* head, double beginning, double end)
 {
     node* cur, *buffer;
@@ -116,7 +101,7 @@ int delete_by_border(node* head, double beginning, double end)
     /* Two subtrees case */
     if(cur->left != NULL && cur->right != NULL)
     {
-        buffer = get_next_after_deleted(cur);
+        buffer = get_min(cur->right);
         cur->beginning = buffer->beginning;
         cur->end = buffer->end;
         if(buffer->right == NULL)
