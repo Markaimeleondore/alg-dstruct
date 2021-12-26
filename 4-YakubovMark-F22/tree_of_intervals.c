@@ -70,7 +70,7 @@ node* get_next_after_deleted(node* start)
     if(parent_buffer->right)
         return get_min(parent_buffer->right);
     left_buffer = parent_buffer->parent;
-    while(left_buffer && (parent_buffer = left_buffer->right))
+    while(left_buffer && (parent_buffer == left_buffer->right))
     {
         parent_buffer = left_buffer;
         left_buffer = left_buffer->parent;
