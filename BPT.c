@@ -3,7 +3,7 @@
 #define true 1
 #define false 0
 
-#define param 7
+#define param 2
 #define children_num 2 * param + 1
 #define max_key_number 2 * param
 
@@ -349,6 +349,19 @@ void delete_by_key(node* root, int key)
 }
 
 
+void print(node * root, int lvl, int child)
+{
+    if(root)
+    {
+        for(int i = 0; i < root->num_of_keys; i++)
+            printf("lvl %i child %i key %i\n", lvl, child, root->keys[i]);
+        for (int i = 0; i < children_num; i++)
+            if(root->children[i])
+                print(root->children[i], lvl + 1, i);
+    }
+}
+
+
 int main()
 {
 
@@ -371,6 +384,8 @@ int main()
             else
                 printf("no\n");
             break;
+        case 'd':
+            print(root, 0, 0);
         }
     }
     return 0;
